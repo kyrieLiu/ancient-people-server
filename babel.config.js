@@ -1,1 +1,1 @@
-module.exports = { presets: ['es2015'] }
+module.exports = { presets: ['es2015'] };
