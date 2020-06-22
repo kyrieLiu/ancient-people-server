@@ -23,6 +23,6 @@ index.use(async(ctx, next) => {
   ctx.response.body = '<h1>Hello, koa2!</h1>';
 });
 
-index.listen(3006);
+index.listen(3003);
 console.log('app started at port 3003...');
 
