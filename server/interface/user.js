@@ -11,7 +11,6 @@ const Store = new Redis().client;
 const router = new Router({ prefix: '/ancientApi/user' });
 
 router.post('/login', async(ctx, next) => {
-  console.log('访问');
   const username = ctx.request.body.username;
   if (!username) {
     ctx.body = { message: '请输入用户名' };
@@ -65,7 +64,8 @@ router.post('/register', async(ctx, next) => {
 
     const user = new Users({
       username,
-      password: ctx.request.body.password
+      password: ctx.request.body.password,
+      headPortrait: ctx.request.body.headPortrait
     });
     try {
       await user.save();

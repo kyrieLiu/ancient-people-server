@@ -15,8 +15,18 @@ import dbConfig from './dbs/config';
 import verifyUser from './utils/verify';
 import user from './interface/user';
 import goods from '../server/interface/goods';
+import uploadFile from '../server/interface/uploadFile';
 
 const app = new Koa();
+
+const koaBody = require('koa-body');
+
+app.use(koaBody({
+  multipart: true,
+  formidable: {
+    maxFileSize: 200 * 1024 * 1024 // 设置上传文件大小最大限制，默认200M
+  }
+}));
 
 app.use(bodyParser({
   extendTypes: ['json', 'form', 'text']
@@ -31,6 +41,7 @@ app.use(cors());
 app.use(verifyUser());
 // 配置接口路径
 app.use(user.routes()).use(user.allowedMethods());
+app.use(uploadFile.routes()).use(uploadFile.allowedMethods());
 app.use(goods.routes()).use(goods.allowedMethods());
 
 app.use(async(ctx, next) => {

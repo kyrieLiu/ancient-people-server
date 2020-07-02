@@ -13,6 +13,10 @@ const UserSchema = new Schema({
   password: {
     type: String,
     require: true
+  },
+  headPortrait: {
+    type: String,
+    require: true
   }
 });
 export default mongoose.model('User', UserSchema);
