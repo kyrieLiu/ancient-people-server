@@ -14,7 +14,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "formidable": "^1.2.2",
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.12.1",
