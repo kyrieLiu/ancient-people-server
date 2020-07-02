@@ -1,3 +1,4 @@
+// https://cloud.tencent.com/developer/doc/1078
 module.exports = {
   parser: 'babel-eslint',
   'extends': 'eslint:recommended',
@@ -52,6 +53,7 @@ module.exports = {
       'before': true,
       'after': true
     }],
+    // 回调匿名函数
     'handle-callback-err': [2, '^(err|error)$'],
     'indent': [2, 2, {
       'SwitchCase': 1
@@ -118,6 +120,7 @@ module.exports = {
     'no-obj-calls': 2,
     'no-octal': 2,
     'no-octal-escape': 2,
+    // _dirname不能拼接
     'no-path-concat': 2,
     'no-proto': 2,
     'no-redeclare': 2,
@@ -162,7 +165,7 @@ module.exports = {
     }],
     'padded-blocks': [2, 'never'],
     'space-before-blocks': [2, 'always'],
-    'space-before-function-paren': [2, 'never'],
+    // 'space-before-function-paren': [2, 'never'],
     'space-in-parens': [2, 'never'],
     'space-infix-ops': 2,
     'space-unary-ops': [2, {
