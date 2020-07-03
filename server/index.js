@@ -59,7 +59,7 @@ app.use(async(ctx, next) => {
   ctx.response.body = '<h1>Hello, koa2!</h1>';
 });
 
-const host = process.env.HOST || '127.0.0.1';
+const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 3002;
 app.listen(port, host);
 console.log(`Server listening on http://${host}:${port}`);
