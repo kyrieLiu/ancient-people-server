@@ -4,7 +4,7 @@ import fs from 'fs';
 
 import path from 'path';
 
-const router = new Router({ prefix: '/ancientApi/files' });
+const router = new Router({ prefix: '/files' });
 
 router.post('/uploadFile', async (ctx, next) => {
   // 上传单个文件

@@ -8,7 +8,7 @@ import Users from '../dbs/models/users';
 
 const Store = new Redis().client;
 
-const router = new Router({ prefix: '/ancientApi/user' });
+const router = new Router({ prefix: '/user' });
 
 router.post('/login', async(ctx, next) => {
   const username = ctx.request.body.username;

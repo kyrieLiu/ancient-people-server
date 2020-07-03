@@ -7,7 +7,7 @@
 import Router from 'koa-router';
 import Goods from '../dbs/models/goods';
 
-const router = new Router({ prefix: '/ancientApi/goods' });
+const router = new Router({ prefix: '/goods' });
 // 查询列表
 router.post('/list', async(ctx) => {
   try {

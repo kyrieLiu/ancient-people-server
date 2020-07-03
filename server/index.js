@@ -53,11 +53,11 @@ app.use(async(ctx, next) => {
   ctx.response.set('X-Response-Time', `${ms}ms`);
 });
 
-/* app.use(async(ctx, next) => {
+app.use(async(ctx, next) => {
   await next();
   ctx.response.type = 'text/html';
   ctx.response.body = '<h1>Hello, koa2!</h1>';
-});*/
+});
 
 const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3002;
