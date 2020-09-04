@@ -14,6 +14,7 @@ import dbConfig from './dbs/config';
 
 import verifyUser from './utils/verify';
 import user from './interface/user';
+import banner from '../server/interface/banner';
 import goods from '../server/interface/goods';
 import uploadFile from '../server/interface/uploadFile';
 
@@ -44,6 +45,7 @@ app.use(verifyUser());
 // 配置接口路径
 app.use(user.routes()).use(user.allowedMethods());
 app.use(uploadFile.routes()).use(uploadFile.allowedMethods());
+app.use(banner.routes()).use(banner.allowedMethods());
 app.use(goods.routes()).use(goods.allowedMethods());
 
 app.use(async(ctx, next) => {
@@ -51,7 +53,6 @@ app.use(async(ctx, next) => {
   await next();
   const ms = new Date().getTime() - start;
   console.log(`${ctx.request.method} ${ctx.request.url}: ${ms}ms`);
-  console.log(process.env.NODE_ENV);
   ctx.response.set('X-Response-Time', `${ms}ms`);
 });
 

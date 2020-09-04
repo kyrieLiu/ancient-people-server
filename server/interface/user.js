@@ -42,7 +42,7 @@ router.post('/login', async(ctx, next) => {
     });
 
     if (data) {
-      responseFormat.success(ctx, { user_id: data._id, token, userInfo: data }, '登录成功');
+      responseFormat.success(ctx, '登录成功', { user_id: data._id, token, userInfo: data });
     } else {
       responseFormat.error(ctx, '登录失败');
     }
@@ -69,7 +69,7 @@ router.post('/register', async(ctx, next) => {
     });
     try {
       await user.save();
-      responseFormat.success(ctx, { msg: '注册成功' });
+      responseFormat.success(ctx, '注册成功');
     } catch (e) {
       responseFormat.error(ctx, '注册失败');
     }

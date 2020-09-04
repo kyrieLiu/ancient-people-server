@@ -28,7 +28,7 @@ router.post('/uploadFile', async (ctx, next) => {
   reader.pipe(upStream);
   const fileFolder = process.env.NODE_ENV === 'development' ? 'http://localhost/file/' : 'http://www.8000cloud.com/file/';
 
-  responseFormat.success(ctx, { filePath: fileFolder + fileName }, '上传成功');
+  responseFormat.success(ctx, '上传成功', { filePath: fileFolder + fileName },);
 });
 
 export default router;
