@@ -13,7 +13,6 @@ const router = new Router({ prefix: '/banner' });
 router.post('/list', async(ctx) => {
   try {
     const body = ctx.request.body;
-    console.log('body==', body);
     const page = body.page;
     const size = body.size;
     const skipNum = (page - 1) * size;
