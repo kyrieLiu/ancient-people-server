@@ -4,7 +4,7 @@
  * @Description: 服务器配置
  */
 export default {
-  dbs: 'mongodb://127.0.0.1:27017/ancient',
+  dbs: 'mongodb://121.36.173.121:27017/ancient',
   redis: {
     get host() {
       return '127.0.0.1';

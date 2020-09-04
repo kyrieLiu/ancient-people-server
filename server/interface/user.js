@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 
 import Users from '../dbs/models/users';
 
+import responseFormat from '../utils/responseFormat';
+
 const Store = new Redis().client;
 
 const router = new Router({ prefix: '/user' });
@@ -13,9 +15,9 @@ const router = new Router({ prefix: '/user' });
 router.post('/login', async(ctx, next) => {
   const username = ctx.request.body.username;
   if (!username) {
-    ctx.body = { message: '请输入用户名' };
+    responseFormat.error(ctx, '请输入用户名');
   } else if (!ctx.request.body.password) {
-    ctx.body = { message: '请输入密码' };
+    responseFormat.error(ctx, '请输入密码');
   } else {
     let data = null;
     // 生成token
@@ -40,25 +42,23 @@ router.post('/login', async(ctx, next) => {
     });
 
     if (data) {
-      ctx.body = {
-        data: { user_id: data._id, token, userInfo: data },
-        code: 0,
-        message: '登陆成功'
-      };
-    } else { ctx.body = { message: '登陆失败' }; }
+      responseFormat.success(ctx, { user_id: data._id, token, userInfo: data }, '登录成功');
+    } else {
+      responseFormat.error(ctx, '登录失败');
+    }
   }
 });
 
 router.post('/register', async(ctx, next) => {
   const username = ctx.request.body.username;
   if (!username) {
-    ctx.body = { message: '请输入用户名' };
+    responseFormat.error(ctx, '请输入用户名');
   } else if (!ctx.request.body.password) {
-    ctx.body = { message: '请输入密码' };
+    responseFormat.error(ctx, '请输入密码');
   } else {
     const findUser = await Users.findOne({ username: username });
     if (findUser) {
-      ctx.body = { message: '用户名已存在' };
+      responseFormat.error(ctx, '用户名已存在');
       return;
     }
 
@@ -69,15 +69,9 @@ router.post('/register', async(ctx, next) => {
     });
     try {
       await user.save();
-      ctx.body = {
-        code: 0,
-        message: '注册成功'
-      };
+      responseFormat.success(ctx, { msg: '注册成功' });
     } catch (e) {
-      ctx.body = {
-        code: -1,
-        message: '注册失败'
-      };
+      responseFormat.error(ctx, '注册失败');
     }
   }
 });

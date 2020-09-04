@@ -21,6 +21,8 @@ const app = new Koa();
 
 const koaBody = require('koa-body');
 
+import responseFormat from './utils/responseFormat';
+
 app.use(koaBody({
   multipart: true,
   formidable: {
@@ -55,8 +57,8 @@ app.use(async(ctx, next) => {
 
 app.use(async(ctx, next) => {
   await next();
-  ctx.response.type = 'text/html';
-  ctx.response.body = '<h1>Hello, koa2!</h1>';
+  responseFormat.custom(ctx, 404, { code: -1, msg: 'not found ' + ctx.request.path });
+  // responseFormat.success(ctx, { msg: '注册成功' });
 });
 
 const host = process.env.HOST || '0.0.0.0';
