@@ -2,8 +2,6 @@ import Router from 'koa-router';
 
 import fs from 'fs';
 
-import path from 'path';
-
 import responseFormat from '../utils/responseFormat';
 
 const router = new Router({ prefix: '/files' });
@@ -31,4 +29,4 @@ router.post('/uploadFile', async (ctx, next) => {
   responseFormat.success(ctx, '上传成功', { filePath: fileFolder + fileName },);
 });
 
-export default router;
+module.exports = router;

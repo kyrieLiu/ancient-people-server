@@ -13,11 +13,9 @@ import mongoose from 'mongoose';
 import dbConfig from './dbs/config';
 
 import verifyUser from './utils/verify';
-import user from './interface/user';
-import banner from '../server/interface/banner';
-import uploadFile from '../server/interface/uploadFile';
 
 import fs from 'fs';
+import path from 'path';
 
 const app = new Koa();
 
@@ -43,19 +41,14 @@ app.use(cors());
 
 // 验证用户信息
 app.use(verifyUser());
-// 配置接口路径
-// const modulesFiles = require.context('./interface', true, /.js$/);
-// const modules = modulesFiles.keys().reduce((modules, modulePath) => {
-//   const moduleName = modulePath.replace(/^.\/(.*)\.js/, '$1');
-//   const value = modulesFiles(modulePath);
-//   modules[moduleName] = value.default;
-//   console.log('modules==', modules);
-//   return modules;
-// }, {});
 
-app.use(user.routes()).use(user.allowedMethods());
-app.use(uploadFile.routes()).use(uploadFile.allowedMethods());
-app.use(banner.routes()).use(banner.allowedMethods());
+const dir = path.join(__dirname, './interface');
+// 配置接口路径
+const interfaceArr = fs.readdirSync(dir);
+interfaceArr.forEach(item => {
+  const routeInstance = require('./interface/' + item);
+  app.use(routeInstance.routes()).use(routeInstance.allowedMethods());
+});
 
 app.use(async(ctx, next) => {
   const start = new Date().getTime();

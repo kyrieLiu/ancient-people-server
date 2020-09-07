@@ -76,4 +76,4 @@ router.post('/register', async(ctx, next) => {
   }
 });
 
-export default router;
+module.exports = router;
