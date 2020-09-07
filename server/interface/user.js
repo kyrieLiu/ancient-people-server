@@ -71,7 +71,7 @@ router.post('/register', async(ctx, next) => {
       await user.save();
       responseFormat.success(ctx, '注册成功');
     } catch (e) {
-      responseFormat.error(ctx, '注册失败');
+      responseFormat.error(ctx, '注册失败', e.message);
     }
   }
 });
