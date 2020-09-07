@@ -7,7 +7,7 @@
 import Koa from 'koa';
 
 const bodyParser = require('koa-bodyparser');
-import cors from 'koa-cors';
+import cors from 'koa2-cors';
 import mongoose from 'mongoose';
 
 import dbConfig from './dbs/config';
@@ -18,6 +18,7 @@ import fs from 'fs';
 import path from 'path';
 
 const app = new Koa();
+const koaStatic = require('koa-static');
 
 const koaBody = require('koa-body');
 
@@ -39,14 +40,18 @@ mongoose.connect(dbConfig.dbs, {
 });
 app.use(cors());
 
+// 配置静态web服务的中间件
+const staticPath = path.join(__dirname, '../public');
+app.use(koaStatic(staticPath));
+
 // 验证用户信息
 app.use(verifyUser());
 
-const dir = path.join(__dirname, './interface');
+const dir = path.join(__dirname, './routes');
 // 配置接口路径
 const interfaceArr = fs.readdirSync(dir);
 interfaceArr.forEach(item => {
-  const routeInstance = require('./interface/' + item);
+  const routeInstance = require('./routes/' + item);
   app.use(routeInstance.routes()).use(routeInstance.allowedMethods());
 });
 
@@ -59,9 +64,8 @@ app.use(async(ctx, next) => {
 });
 
 app.use(async(ctx, next) => {
-  await next();
-  responseFormat.custom(ctx, 404, { code: -1, msg: 'not found ' + ctx.request.path });
-  // responseFormat.success(ctx, { msg: '注册成功' });
+  // await next();
+  responseFormat.custom(ctx, 404, { code: 404, msg: 'not found ' + ctx.request.path });
 });
 
 const host = process.env.HOST || '0.0.0.0';

@@ -10,6 +10,27 @@ import responseFormat from '../utils/responseFormat';
 
 const router = new Router({ prefix: '/banner' });
 // 查询列表
+/**
+ * @api {post} /banner/list
+ * @apiDescription banner列表
+ * @apiName banner列表查询
+ * @apiGroup Banner模块
+ * @apiParam {Number} page 页数
+ * @apiParam {Number} size  查询数
+ * @apiParam {Object} [condition]  查询实体
+ * @apiParamExample {json} Request-Example:
+ * { "page": 1,"size":10 }
+ * @apiSampleRequest /banner/list
+ * @apiSuccess {json} result
+ * @apiSuccessExample {json} Success-Response:
+ *  {
+ *      "success" : "true",
+ *      "result" : {
+ *          "name" : "loginName",
+ *          "password" : "loginPass"
+ *      }
+ *  }
+ */
 router.post('/list', async(ctx) => {
   try {
     const body = ctx.request.body;

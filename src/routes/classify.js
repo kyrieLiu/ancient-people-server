@@ -1,14 +1,14 @@
 /**
  * @author Liu Yin
  * @date 2020/2/12
- * @Description: banner路由接口
+ * @Description: Classify路由接口
 */
 
 import Router from 'koa-router';
-import Banner from '../dbs/models/banner';
+import Classify from '../dbs/models/classify';
 import responseFormat from '../utils/responseFormat';
 
-const router = new Router({ prefix: '/banner' });
+const router = new Router({ prefix: '/classify' });
 // 查询列表
 router.post('/list', async(ctx) => {
   try {
@@ -26,18 +26,14 @@ router.post('/list', async(ctx) => {
           { linkUrl: { $regex: reg }}
         ];
       }
-
-      if (condition.showStatus) {
-        params.showStatus = 1;
-      }
     }
 
-    const list = await Banner.find(
+    const list = await Classify.find(
       params
     ).skip(skipNum).limit(size)
       // .sort({ _id: -1 })
       .exec();
-    const total = await Banner.countDocuments(condition);
+    const total = await Classify.countDocuments(condition);
     responseFormat.pagingSuccess(ctx, list, total);
   } catch (e) {
     responseFormat.error(ctx, '查询失败', e.message);
@@ -48,10 +44,10 @@ router.post('/save', async function(ctx) {
   try {
     const body = ctx.request.body;
     if (body._id) {
-      await Banner.where({ _id: body._id }).updateOne(body);
+      await Classify.where({ _id: body._id }).updateOne(body);
     } else {
-      const banner = new Banner(body);
-      await banner.save();
+      const classifyInstance = new Classify(body);
+      await classifyInstance.save();
     }
     responseFormat.success(ctx, '操作成功');
   } catch (e) {
@@ -62,7 +58,7 @@ router.post('/save', async function(ctx) {
 router.get('/detail', async function(ctx) {
   try {
     const query = ctx.request.query;
-    const data = await Banner.findOne({ _id: query._id });
+    const data = await Classify.findOne({ _id: query._id });
     responseFormat.success(ctx, '查询成功', data);
   } catch (e) {
     responseFormat.error(ctx, '查询失败', e.message);
@@ -72,7 +68,7 @@ router.get('/detail', async function(ctx) {
 router.post('/delete', async function(ctx) {
   try {
     const body = ctx.request.body;
-    await Banner.deleteOne({ _id: body._id });
+    await Classify.deleteOne({ _id: body._id });
     responseFormat.success(ctx, '操作成功');
   } catch (e) {
     responseFormat.error(ctx, '操作失败', e.message);
