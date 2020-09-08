@@ -15,7 +15,7 @@ const verify = async function(ctx, next) {
       await next();
     } else {
       ctx.body = {
-        code: -2,
+        code: -1,
         message: '无效token'
       };
     }

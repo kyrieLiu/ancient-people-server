@@ -11,7 +11,7 @@ import responseFormat from '../utils/responseFormat';
 const router = new Router({ prefix: '/banner' });
 // 查询列表
 /**
- * @api {post} /banner/list
+ * @api {post} /banner/lists
  * @apiDescription banner列表
  * @apiName banner列表查询
  * @apiGroup Banner模块
@@ -21,15 +21,24 @@ const router = new Router({ prefix: '/banner' });
  * @apiParamExample {json} Request-Example:
  * { "page": 1,"size":10 }
  * @apiSampleRequest /banner/list
- * @apiSuccess {json} result
+ * @apiSuccess {Number} code 状态码
+ * @apiSuccess {Array} list 数据列表
+ * @apiSuccess {String} list.name banner名称
+ * @apiVersion 0.1.0
  * @apiSuccessExample {json} Success-Response:
  *  {
- *      "success" : "true",
- *      "result" : {
- *          "name" : "loginName",
- *          "password" : "loginPass"
- *      }
- *  }
+    "code": 0,
+    "list": [
+        {
+            "_id": "5f521868cfa77333a4336ac1",
+            "name": "第一张",
+            "linkUrl": "www",
+            "picturePath": "http://localhost/file/159921571835589141596207625.jpg",
+            "showStatus": 1
+        }
+    ],
+    "total": 4
+}
  */
 router.post('/list', async(ctx) => {
   try {
@@ -64,7 +73,6 @@ router.post('/list', async(ctx) => {
     responseFormat.error(ctx, '查询失败', e.message);
   }
 });
-// 新增编辑
 router.post('/save', async function(ctx) {
   try {
     const body = ctx.request.body;

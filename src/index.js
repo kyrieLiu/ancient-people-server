@@ -47,20 +47,20 @@ app.use(koaStatic(staticPath));
 // 验证用户信息
 app.use(verifyUser());
 
-const dir = path.join(__dirname, './routes');
-// 配置接口路径
-const interfaceArr = fs.readdirSync(dir);
-interfaceArr.forEach(item => {
-  const routeInstance = require('./routes/' + item);
-  app.use(routeInstance.routes()).use(routeInstance.allowedMethods());
-});
-
 app.use(async(ctx, next) => {
   const start = new Date().getTime();
   await next();
   const ms = new Date().getTime() - start;
   console.log(`${ctx.request.method} ${ctx.request.url}: ${ms}ms`);
   ctx.response.set('X-Response-Time', `${ms}ms`);
+});
+
+const dir = path.join(__dirname, './routes');
+// 配置接口路径
+const interfaceArr = fs.readdirSync(dir);
+interfaceArr.forEach(item => {
+  const routeInstance = require('./routes/' + item);
+  app.use(routeInstance.routes()).use(routeInstance.allowedMethods());
 });
 
 app.use(async(ctx, next) => {
