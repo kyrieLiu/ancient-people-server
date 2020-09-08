@@ -3,12 +3,13 @@
  * date 2020/9/4
  * Description:格式化返回数据
  */
+
 const responseFormat = new class {
   // 成功返回
   success(ctx, msg, data) {
     ctx.status = 200;
     ctx.body = {
-      code: 0,
+      code: 'success',
       data,
       msg
     };
@@ -17,7 +18,7 @@ const responseFormat = new class {
   pagingSuccess(ctx, list, total) {
     ctx.status = 200;
     ctx.body = {
-      code: 0,
+      code: 'success',
       list,
       total
     };
@@ -26,7 +27,7 @@ const responseFormat = new class {
   error(ctx, msg, error) {
     ctx.status = 500;
     ctx.body = {
-      code: -1,
+      code: 'error',
       msg,
       error
     };
