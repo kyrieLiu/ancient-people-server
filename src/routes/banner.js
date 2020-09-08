@@ -11,32 +11,11 @@ import responseFormat from '../utils/responseFormat';
 const router = new Router({ prefix: '/banner' });
 
 /**
- * @apiDefine        ErrorResponse
- * @apiErrorExample  {json} Error-Response:
- *     {
- *       "code":"error"
- *       "msg": "查询错误"
- *     }
- */
-
-/**
- * @apiDefine        SuccessResponse
- * @apiSuccessExample  {json} Success-Response:
- *     {
- *       "code":"success"
- *       "msg": "成功"
- *     }
- */
-
-/**
- * @api {get} /banner/list/:page/:size
+ * @api {get} /banner/list/:page/:size 列表
  * @apiGroup Banner管理
  * @apiName Banner列表
- * @apiHeader {String} x_access_token  Use unique token
- * @apiHeaderExample {json} Header-Example:
- *     {
- *       "x_access_token": "kdlsfmdseiij323434dkjfnsknf"
- *     }
+ * @apiPermission admin
+ * @apiUse HeaderExample
  * @apiDescription banner列表
  * @apiSampleRequest /banner/list/1/10
  * @apiParam {String} [keyWords]  关键字查询
@@ -50,6 +29,7 @@ const router = new Router({ prefix: '/banner' });
  * @apiSuccess {String} list.linkUrl banner链接地址
  * @apiSuccess {String} list.picturePath 图片路径
  * @apiSuccess {String} list.showStatus 显示状态
+ * @apiError NoPermission Only Admins can access the data.
  * @apiUse ErrorResponse
  * @apiSuccessExample {json} Success-Response:
  *  {
@@ -97,7 +77,7 @@ router.get('/list/:page/:size', async(ctx) => {
   }
 });
 /**
- * @api {post} /banner/save
+ * @api {post} /banner/save 保存
  * @apiGroup Banner管理
  * @apiName 编辑banner
  * @apiDescription 新增编辑banner
@@ -109,12 +89,13 @@ router.get('/list/:page/:size', async(ctx) => {
  * @apiParam {String} [showStatus] 显示状态
  * @apiParamExample {json} Request-Example:
  * {
-            "_id": "5f521868cfa77333a4336ac1",
-            "name": "第一张",
-            "linkUrl": "www",
-            "picturePath": "http://localhost/file/159921571835589141596207625.jpg",
-            "showStatus": 1
-        }
+        "_id": "5f521868cfa77333a4336ac1",
+        "name": "第一张",
+        "linkUrl": "www",
+        "picturePath": "http://localhost/file/159921571835589141596207625.jpg",
+        "showStatus": 1
+    }
+ * @apiUse HeaderExample
  * @apiUse ErrorResponse
  * @apiUse SuccessResponse
  */
@@ -132,17 +113,46 @@ router.post('/save', async function(ctx) {
     responseFormat.error(ctx, '操作失败', e.message);
   }
 });
-// 详情
-router.get('/detail', async function(ctx) {
+/**
+ * @api {get} /banner/detail/:id 详情
+ * @apiGroup Banner管理
+ * @apiDescription 查询详情信息
+ * @apiSampleRequest /banner/detail/5f521868cfa77333a4336ac1
+ * @apiParamExample Request-Example:
+ * /banner/detail/5f521868cfa77333a4336ac1
+ * @apiUse HeaderExample
+ * @apiUse ErrorResponse
+ * @apiSuccessExample {json} Success-Response:
+ * {
+        "_id": "5f521868cfa77333a4336ac1",
+        "name": "第一张",
+        "linkUrl": "www",
+        "picturePath": "http://localhost/file/159921571835589141596207625.jpg",
+        "showStatus": 1
+    }
+ */
+router.get('/detail/:id', async function(ctx) {
   try {
-    const query = ctx.request.query;
-    const data = await Banner.findOne({ _id: query._id });
+    const data = await Banner.findOne({ _id: ctx.params.id });
     responseFormat.success(ctx, '查询成功', data);
   } catch (e) {
     responseFormat.error(ctx, '查询失败', e.message);
   }
 });
-// 删除
+/**
+ * @api {post} /banner/delete 删除
+ * @apiGroup Banner管理
+ * @apiDescription 删除
+ * @apiParam {String} _id banner id
+ * @apiSampleRequest /banner/delete
+ * @apiParamExample Request-Example:
+ * {
+ *   _id:1
+ * }
+ * @apiUse HeaderExample
+ * @apiUse ErrorResponse
+ * @apiUse SuccessResponse
+ */
 router.post('/delete', async function(ctx) {
   try {
     const body = ctx.request.body;

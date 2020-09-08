@@ -59,6 +59,9 @@ const dir = path.join(__dirname, './routes');
 // 配置接口路径
 const interfaceArr = fs.readdirSync(dir);
 interfaceArr.forEach(item => {
+  if (item === 'apidoc.js') {
+    return;
+  }
   const routeInstance = require('./routes/' + item);
   app.use(routeInstance.routes()).use(routeInstance.allowedMethods());
 });

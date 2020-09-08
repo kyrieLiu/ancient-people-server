@@ -9,17 +9,9 @@ const router = new Router({ prefix: '/files' });
 /**
  * @api {post} /uploadFile
  * @apiGroup 文件上传
- * @apiDescription 上传文件
- * @apiName 上传文件apiName
- * @apiSampleRequest /banner/list/1/10
- * @apiParam {String} [keyWords]  关键字查询
- * @apiParam {String} [showStatus]  是否启用 0未启用  1启用
- * @apiParamExample {json} Request-Example:
- * {
-        "keyWords":"一",
-        "showStatus":0
-}
- * @apiVersion 0.1.0
+ * @apiName 文件导入
+ * @apiDescription 上传文件通用接口
+ * @apiParam {file} file 文件
  * @apiUse ErrorResponse
  * @apiUse SuccessResponse
  */
