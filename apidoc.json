@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "api for ancient",
   "title": "ancient api",
-  "url" : "http://www.8000cloud.com",
+  "url" : "http://www.8000cloud.com/apiAncient",
   "sampleUrl": "http://localhost:3002",
   "forceLanguage":"zh-cn",
   "template": {

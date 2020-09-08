@@ -22,7 +22,7 @@ router.post('/uploadFile', async (ctx, next) => {
   const reader = fs.createReadStream(file.path);
   const fileName = new Date().getTime() + file.name;
   // const dir = path.join(__dirname, '../../../files/');
-  const dir = process.env.NODE_ENV ? '/Users/liuyin/fileStore/files' : '/fileStore/files';
+  const dir = process.env.NODE_ENV ? '/Users/liuyin/fileStore/files' : '/project/fileStore';
   const isExist = fs.existsSync(dir);
   if (!isExist) {
     await fs.mkdirSync(dir);
