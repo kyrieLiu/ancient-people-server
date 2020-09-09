@@ -99,8 +99,7 @@ router.get('/list/:page/:size', async(ctx) => {
  * @apiUse ErrorResponse
  * @apiUse SuccessResponse
  */
-router.post('/save', async function(ctx) {
-  console.log('进入bannerSave')
+router.post('/save', async (ctx) => {
   try {
     const body = ctx.request.body;
     if (body._id) {
@@ -132,7 +131,7 @@ router.post('/save', async function(ctx) {
         "showStatus": 1
     }
  */
-router.get('/detail/:id', async function(ctx) {
+router.get('/detail/:id', async (ctx) => {
   try {
     const data = await Banner.findOne({ _id: ctx.params.id });
     responseFormat.success(ctx, '查询成功', data);
@@ -154,7 +153,7 @@ router.get('/detail/:id', async function(ctx) {
  * @apiUse ErrorResponse
  * @apiUse SuccessResponse
  */
-router.post('/delete', async function(ctx) {
+router.post('/delete', async (ctx) => {
   try {
     const body = ctx.request.body;
     await Banner.deleteOne({ _id: body._id });
