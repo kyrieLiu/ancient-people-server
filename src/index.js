@@ -50,7 +50,7 @@ app.use(async(ctx, next) => {
   try {
     await next();
   } catch (e) {
-    const path = `${ctx.request.method} ${ctx.request.url}`;
+    const path = `${ctx.request.method} ${ctx.request.url}  Time: ${new Date()}`;
     logger.error(path);
     logger.error(e);
     responseFormat.error(ctx, e.message);
