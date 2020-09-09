@@ -16,19 +16,16 @@ const router = new Router({ prefix: '/classify' });
  * @apiName 分类列表
  * @apiPermission admin
  * @apiUse HeaderExample
- * @apiDescription banner列表
+ * @apiDescription classify列表
  * @apiSampleRequest /classify/list/1/10
  * @apiParam {String} [keyWords]  关键字查询
- * @apiParam {String} [showStatus]  是否启用 0未启用  1启用
  * @apiParamExample Request-Example:  "
- * /classify/list/1/10?keyWords="一"&"showStatus=0
+ * /classify/list/1/10?keyWords="一"
  * @apiSuccess {Number} code 状态码
  * @apiSuccess {Number} total 总条数
  * @apiSuccess {Array} list 数据列表
- * @apiSuccess {String} list.name banner名称
- * @apiSuccess {String} list.linkUrl banner链接地址
- * @apiSuccess {String} list.picturePath 图片路径
- * @apiSuccess {String} list.showStatus 显示状态
+ * @apiSuccess {String} list.name classify名称
+ * @apiSuccess {String} list.explain classify说明
  * @apiError NoPermission Only Admins can access the data.
  * @apiUse ErrorResponse
  * @apiSuccessExample {json} Success-Response:
@@ -37,10 +34,8 @@ const router = new Router({ prefix: '/classify' });
     "list": [
         {
             "_id": "5f521868cfa77333a4336ac1",
-            "name": "第一张",
-            "linkUrl": "www",
-            "picturePath": "http://localhost/file/159921571835589141596207625.jpg",
-            "showStatus": 1
+            "name": "flutter",
+            "explain": "谷歌出品"
         }
     ],
     "total": 1
@@ -78,21 +73,17 @@ router.get('/list/:page/:size', async(ctx) => {
 /**
  * @api {post} /classify/save 保存
  * @apiGroup 分类管理
- * @apiName 编辑banner
- * @apiDescription 新增编辑banner
+ * @apiName 编辑classify
+ * @apiDescription 新增编辑classify
  * @apiSampleRequest /classify/save
- * @apiParam {String} _id banner id  编辑需携带
- * @apiParam {String} name banner名称
- * @apiParam {String} linkUrl banner链接地址
- * @apiParam {String} picturePath 图片路径
- * @apiParam {String} [showStatus] 显示状态
+ * @apiParam {String} _id classify id  编辑需携带
+ * @apiParam {String} name classify名称
+ * @apiParam {String} explain classify链接地址
  * @apiParamExample {json} Request-Example:
  * {
         "_id": "5f521868cfa77333a4336ac1",
-        "name": "第一张",
-        "linkUrl": "www",
-        "picturePath": "http://localhost/file/159921571835589141596207625.jpg",
-        "showStatus": 1
+        "name": "flutter",
+        "explain": "谷歌出品"
     }
  * @apiUse HeaderExample
  * @apiUse ErrorResponse
@@ -124,10 +115,8 @@ router.post('/save', async (ctx) => {
  * @apiSuccessExample {json} Success-Response:
  * {
         "_id": "5f521868cfa77333a4336ac1",
-        "name": "第一张",
-        "linkUrl": "www",
-        "picturePath": "http://localhost/file/159921571835589141596207625.jpg",
-        "showStatus": 1
+        "name": "flutter",
+        "explain": "谷歌出品"
     }
  */
 router.get('/detail/:id', async (ctx) => {
@@ -142,11 +131,11 @@ router.get('/detail/:id', async (ctx) => {
  * @api {post} /classify/delete 删除
  * @apiGroup 分类管理
  * @apiDescription 删除
- * @apiParam {String} _id banner id
+ * @apiParam {String} _id classify id
  * @apiSampleRequest /classify/delete
  * @apiParamExample Request-Example:
  * {
- *   _id:1
+ *   _id:5f521868cfa77333a4336ac1
  * }
  * @apiUse HeaderExample
  * @apiUse ErrorResponse
