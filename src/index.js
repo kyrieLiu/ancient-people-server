@@ -50,7 +50,9 @@ app.use(async(ctx, next) => {
   try {
     await next();
   } catch (e) {
-    logger.error(e.message);
+    const path = `${ctx.request.method} ${ctx.request.url}`;
+    logger.error(path);
+    logger.error(e);
     responseFormat.error(ctx, e.message);
   }
   const ms = new Date().getTime() - start;
