@@ -5,15 +5,11 @@
  */
 
 import Koa from 'koa';
-
 const bodyParser = require('koa-bodyparser');
 import cors from 'koa2-cors';
 import mongoose from 'mongoose';
-
 import dbConfig from './dbs/config';
-
 import verifyUser from './utils/verify';
-
 import fs from 'fs';
 import path from 'path';
 
@@ -21,6 +17,8 @@ const app = new Koa();
 const koaStatic = require('koa-static');
 
 const koaBody = require('koa-body');
+
+import logger from '../logs/log4';
 
 import responseFormat from './utils/responseFormat';
 
@@ -49,7 +47,12 @@ app.use(verifyUser());
 
 app.use(async(ctx, next) => {
   const start = new Date().getTime();
-  await next();
+  try {
+    await next();
+  } catch (e) {
+    logger.error(e.message);
+    responseFormat.error(ctx, e.message);
+  }
   const ms = new Date().getTime() - start;
   console.log(`${ctx.request.method} ${ctx.request.url}: ${ms}ms`);
   ctx.response.set('X-Response-Time', `${ms}ms`);
@@ -74,4 +77,4 @@ app.use(async(ctx, next) => {
 const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 3002;
 app.listen(port, host);
-console.log(`Server listening on http://${host}:${port}`);
+logger.info(`Server listening on http://${host}:${port}`);
