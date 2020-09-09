@@ -41,18 +41,19 @@ router.post('/list', async(ctx) => {
 });
 // 新增编辑
 router.post('/save', async function(ctx) {
-  try {
-    const body = ctx.request.body;
-    if (body._id) {
-      await Classify.where({ _id: body._id }).updateOne(body);
-    } else {
-      const classifyInstance = new Classify(body);
-      await classifyInstance.save();
-    }
-    responseFormat.success(ctx, '操作成功');
-  } catch (e) {
-    responseFormat.error(ctx, '操作失败', e.message);
-  }
+  responseFormat.success(ctx, '操作成功');
+  // try {
+  //   const body = ctx.request.body;
+  //   if (body._id) {
+  //     await Classify.where({ _id: body._id }).updateOne(body);
+  //   } else {
+  //     const classifyInstance = new Classify(body);
+  //     await classifyInstance.save();
+  //   }
+  //   responseFormat.success(ctx, '操作成功');
+  // } catch (e) {
+  //   responseFormat.error(ctx, '操作失败', e.message);
+  // }
 });
 // 详情
 router.get('/detail', async function(ctx) {

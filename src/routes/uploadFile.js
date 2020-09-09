@@ -6,8 +6,24 @@ import responseFormat from '../utils/responseFormat';
 
 const router = new Router({ prefix: '/fileManage' });
 
+router.post('/save', async function(ctx) {
+  responseFormat.success(ctx, '操作成功');
+  // try {
+  //   const body = ctx.request.body;
+  //   if (body._id) {
+  //     await Classify.where({ _id: body._id }).updateOne(body);
+  //   } else {
+  //     const classifyInstance = new Classify(body);
+  //     await classifyInstance.save();
+  //   }
+  //   responseFormat.success(ctx, '操作成功');
+  // } catch (e) {
+  //   responseFormat.error(ctx, '操作失败', e.message);
+  // }
+});
+
 /**
- * @api {post} /uploadFile
+ * @api {post} /uploadFileLL
  * @apiGroup 文件上传
  * @apiName 文件导入
  * @apiDescription 上传文件通用接口
@@ -16,7 +32,7 @@ const router = new Router({ prefix: '/fileManage' });
  * @apiUse SuccessResponse
  */
 router.post('/uploadFile', async (ctx, next) => {
-  console.log('进入uploadFile')
+  console.log('进入uploadFile');
   // 上传单个文件
   const file = ctx.request.files.file; // 获取上传文件
   // 创建可读流
