@@ -6,7 +6,7 @@ import responseFormat from '../utils/responseFormat';
 
 const router = new Router({ prefix: '/fileManage' });
 
-router.post('/save', async function(ctx) {
+router.post('/save', async function(ctx, next) {
   responseFormat.success(ctx, '操作成功');
   // try {
   //   const body = ctx.request.body;
