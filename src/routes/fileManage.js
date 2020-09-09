@@ -6,22 +6,6 @@ import responseFormat from '../utils/responseFormat';
 
 const router = new Router({ prefix: '/fileManage' });
 
-router.post('/save', async function(ctx, next) {
-  responseFormat.success(ctx, '操作成功');
-  // try {
-  //   const body = ctx.request.body;
-  //   if (body._id) {
-  //     await Classify.where({ _id: body._id }).updateOne(body);
-  //   } else {
-  //     const classifyInstance = new Classify(body);
-  //     await classifyInstance.save();
-  //   }
-  //   responseFormat.success(ctx, '操作成功');
-  // } catch (e) {
-  //   responseFormat.error(ctx, '操作失败', e.message);
-  // }
-});
-
 /**
  * @api {post} /uploadFileLL
  * @apiGroup 文件上传
@@ -31,8 +15,7 @@ router.post('/save', async function(ctx, next) {
  * @apiUse ErrorResponse
  * @apiUse SuccessResponse
  */
-router.post('/upload', async function(ctx, next) {
-  console.log('进入uploadFile');
+router.post('/upload', async (ctx, next) => {
   try {
     // 上传单个文件
     const file = ctx.request.files.file; // 获取上传文件
