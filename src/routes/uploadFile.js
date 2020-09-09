@@ -4,7 +4,7 @@ import fs from 'fs';
 
 import responseFormat from '../utils/responseFormat';
 
-const router = new Router({ prefix: '/files' });
+const router = new Router({ prefix: '/fileManage' });
 
 /**
  * @api {post} /uploadFile
@@ -16,6 +16,7 @@ const router = new Router({ prefix: '/files' });
  * @apiUse SuccessResponse
  */
 router.post('/uploadFile', async (ctx, next) => {
+  console.log('进入uploadFile')
   // 上传单个文件
   const file = ctx.request.files.file; // 获取上传文件
   // 创建可读流

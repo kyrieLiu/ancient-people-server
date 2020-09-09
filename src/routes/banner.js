@@ -100,6 +100,7 @@ router.get('/list/:page/:size', async(ctx) => {
  * @apiUse SuccessResponse
  */
 router.post('/save', async function(ctx) {
+  console.log('进入bannerSave')
   try {
     const body = ctx.request.body;
     if (body._id) {
