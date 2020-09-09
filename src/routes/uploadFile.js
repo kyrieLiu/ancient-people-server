@@ -31,7 +31,7 @@ router.post('/save', async function(ctx) {
  * @apiUse ErrorResponse
  * @apiUse SuccessResponse
  */
-router.post('/uploadFile', async (ctx, next) => {
+router.post('/upload', async (ctx, next) => {
   console.log('进入uploadFile');
   // 上传单个文件
   const file = ctx.request.files.file; // 获取上传文件
