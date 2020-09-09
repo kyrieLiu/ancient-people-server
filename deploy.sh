@@ -1,5 +1,5 @@
 #! /bin/bash
-echo "Start\n";
+echo "Start";
 # 执行git命令
 git pull
 
@@ -8,5 +8,5 @@ npm run buildapi
 
 pm2 restart ancient-server
 
-echo "Success\n";
+echo "Success";
 
