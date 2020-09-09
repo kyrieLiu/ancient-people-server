@@ -100,18 +100,14 @@ router.get('/list/:page/:size', async(ctx) => {
  * @apiUse SuccessResponse
  */
 router.post('/save', async (ctx) => {
-  try {
-    const body = ctx.request.body;
-    if (body._id) {
-      await Banner.where({ _id: body._id }).updateOne(body);
-    } else {
-      const banner = new Banner(body);
-      await banner.save();
-    }
-    responseFormat.success(ctx, '操作成功');
-  } catch (e) {
-    responseFormat.error(ctx, '操作失败', e.message);
+  const body = ctx.request.body;
+  if (body._id) {
+    await Banner.where({ _id: body._id }).updateOne(body);
+  } else {
+    const banner = new Banner(body);
+    await banner.save();
   }
+  responseFormat.success(ctx, '操作成功');
 });
 /**
  * @api {get} /banner/detail/:id 详情
@@ -132,12 +128,8 @@ router.post('/save', async (ctx) => {
     }
  */
 router.get('/detail/:id', async (ctx) => {
-  try {
-    const data = await Banner.findOne({ _id: ctx.params.id });
-    responseFormat.success(ctx, '查询成功', data);
-  } catch (e) {
-    responseFormat.error(ctx, '查询失败', e.message);
-  }
+  const data = await Banner.findOne({ _id: ctx.params.id });
+  responseFormat.success(ctx, '查询成功', data);
 });
 /**
  * @api {post} /banner/delete 删除
@@ -154,12 +146,8 @@ router.get('/detail/:id', async (ctx) => {
  * @apiUse SuccessResponse
  */
 router.post('/delete', async (ctx) => {
-  try {
-    const body = ctx.request.body;
-    await Banner.deleteOne({ _id: body._id });
-    responseFormat.success(ctx, '操作成功');
-  } catch (e) {
-    responseFormat.error(ctx, '操作失败', e.message);
-  }
+  const body = ctx.request.body;
+  await Banner.deleteOne({ _id: body._id });
+  responseFormat.success(ctx, '操作成功');
 });
 module.exports = router;

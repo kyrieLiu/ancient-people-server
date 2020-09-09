@@ -14,6 +14,12 @@ const UserSchema = new Schema({
     type: String,
     require: true
   },
+  phone: {
+    type: String
+  },
+  nickname: {
+    type: String
+  },
   headPortrait: {
     type: String,
     require: true

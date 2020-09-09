@@ -17,10 +17,14 @@ const ArticleSchema = new Schema({
   },
   // 文章分类
   classify: {
-    type: Number
+    type: String
   },
   // 作者
   author: {
+    type: String
+  },
+  // 作者ID
+  authorId: {
     type: String
   },
   // 更新时间

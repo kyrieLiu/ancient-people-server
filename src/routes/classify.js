@@ -5,7 +5,7 @@
  */
 
 import Router from 'koa-router';
-import Calssify from '../dbs/models/classify';
+import Classify from '../dbs/models/classify';
 import responseFormat from '../utils/responseFormat';
 
 const router = new Router({ prefix: '/classify' });
@@ -59,17 +59,50 @@ router.get('/list/:page/:size', async(ctx) => {
       params.showStatus = 1;
     }
 
-    const list = await Calssify.find(
+    const list = await Classify.find(
       params
     ).skip(skipNum).limit(size)
     // .sort({ _id: -1 })
       .exec();
-    const total = await Calssify.countDocuments(query);
+    const total = await Classify.countDocuments(query);
     responseFormat.pagingSuccess(ctx, list, total);
   } catch (e) {
     responseFormat.error(ctx, '查询失败', e.message);
   }
 });
+
+/**
+ * @api {get} /classify/allList 获取所有分类
+ * @apiGroup 分类管理
+ * @apiName 所有分类
+ * @apiPermission admin
+ * @apiUse HeaderExample
+ * @apiDescription 所有分类列表
+ * @apiSampleRequest /classify/list/1/10
+ * @apiParamExample Request-Example:  "
+ * /classify/allList
+ * @apiSuccess {Number} code 状态码
+ * @apiSuccess {Array} list 数据列表
+ * @apiSuccess {String} list.name classify名称
+ * @apiSuccess {String} list.explain classify说明
+ * @apiUse ErrorResponse
+ * @apiSuccessExample {json} Success-Response:
+ *  {
+    "code": 0,
+    "list": [
+        {
+            "_id": "5f521868cfa77333a4336ac1",
+            "name": "flutter",
+            "explain": "谷歌出品"
+        }
+    ]
+}
+ */
+router.get('/allList', async(ctx) => {
+  const list = await Classify.find().exec();
+  responseFormat.pagingSuccess(ctx, list);
+});
+
 /**
  * @api {post} /classify/save 保存
  * @apiGroup 分类管理
@@ -90,18 +123,14 @@ router.get('/list/:page/:size', async(ctx) => {
  * @apiUse SuccessResponse
  */
 router.post('/save', async (ctx) => {
-  try {
-    const body = ctx.request.body;
-    if (body._id) {
-      await Calssify.where({ _id: body._id }).updateOne(body);
-    } else {
-      const classifyInstance = new Calssify(body);
-      await classifyInstance.save();
-    }
-    responseFormat.success(ctx, '操作成功');
-  } catch (e) {
-    responseFormat.error(ctx, '操作失败', e.message);
+  const body = ctx.request.body;
+  if (body._id) {
+    await Classify.where({ _id: body._id }).updateOne(body);
+  } else {
+    const classifyInstance = new Classify(body);
+    await classifyInstance.save();
   }
+  responseFormat.success(ctx, '操作成功');
 });
 /**
  * @api {get} /classify/detail/:id 详情
@@ -120,12 +149,8 @@ router.post('/save', async (ctx) => {
     }
  */
 router.get('/detail/:id', async (ctx) => {
-  try {
-    const data = await Calssify.findOne({ _id: ctx.params.id });
-    responseFormat.success(ctx, '查询成功', data);
-  } catch (e) {
-    responseFormat.error(ctx, '查询失败', e.message);
-  }
+  const data = await Classify.findOne({ _id: ctx.params.id });
+  responseFormat.success(ctx, '查询成功', data);
 });
 /**
  * @api {post} /classify/delete 删除
@@ -142,12 +167,8 @@ router.get('/detail/:id', async (ctx) => {
  * @apiUse SuccessResponse
  */
 router.post('/delete', async (ctx) => {
-  try {
-    const body = ctx.request.body;
-    await Calssify.deleteOne({ _id: body._id });
-    responseFormat.success(ctx, '操作成功');
-  } catch (e) {
-    responseFormat.error(ctx, '操作失败', e.message);
-  }
+  const body = ctx.request.body;
+  await Classify.deleteOne({ _id: body._id });
+  responseFormat.success(ctx, '操作成功');
 });
 module.exports = router;

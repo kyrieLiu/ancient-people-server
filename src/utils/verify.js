@@ -10,8 +10,11 @@ const Store = new Redis().client;
 const verify = async function(ctx, next) {
   if (ctx.request.header && ctx.request.header.x_access_token) {
     const headerToken = ctx.request.header.x_access_token;
-    const userInfo = await Store.hget(headerToken, 'username');
-    if (userInfo) {
+    const _id = await Store.hget(headerToken, '_id');
+    const username = await Store.hget(headerToken, 'username');
+    if (_id) {
+      ctx.userId = _id;
+      ctx.username = username;
       await next();
     } else {
       ctx.body = {
