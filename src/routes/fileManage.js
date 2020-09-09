@@ -7,8 +7,8 @@ import responseFormat from '../utils/responseFormat';
 const router = new Router({ prefix: '/fileManage' });
 
 /**
- * @api {post} /uploadFileLL
- * @apiGroup 文件上传
+ * @api {post} /uploadFile 文件上传
+ * @apiGroup 文件管理
  * @apiName 文件导入
  * @apiDescription 上传文件通用接口
  * @apiParam {file} file 文件
