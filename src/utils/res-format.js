@@ -4,7 +4,7 @@
  * Description:格式化返回数据
  */
 
-const responseFormat = new class {
+const resFormat = new class {
   // 成功返回
   success(ctx, msg, data) {
     ctx.status = 200;
@@ -39,4 +39,4 @@ const responseFormat = new class {
   }
 }();
 
-export default responseFormat;
+export default resFormat;

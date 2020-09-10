@@ -2,7 +2,7 @@ import Router from 'koa-router';
 
 import fs from 'fs';
 
-import responseFormat from '../utils/responseFormat';
+import resFormat from '../utils/res-format';
 
 const router = new Router({ prefix: '/fileManage' });
 
@@ -35,7 +35,7 @@ router.post('/upload', async (ctx, next) => {
   reader.pipe(upStream);
   const fileFolder = process.env.NODE_ENV === 'development' ? 'http://localhost/file/' : 'http://www.8000cloud.com/file/';
 
-  responseFormat.success(ctx, '上传成功', { filePath: fileFolder + fileName });
+  resFormat.success(ctx, '上传成功', { filePath: fileFolder + fileName });
 });
 
 module.exports = router;

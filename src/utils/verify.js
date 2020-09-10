@@ -5,14 +5,12 @@
  */
 
 import Redis from 'koa-redis';
-import logger from '../../logs/log4';
 const Store = new Redis().client;
 const verify = async function(ctx, next) {
   const headerToken = ctx.request.header['x-access-token'];
   if (ctx.request.header && headerToken) {
     const _id = await Store.hget(headerToken, '_id');
     const username = await Store.hget(headerToken, 'username');
-    logger.debug('验证  _id==', _id, 'headerToken', headerToken);
     if (_id) {
       ctx.userId = _id;
       ctx.username = username;

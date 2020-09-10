@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 
 import Users from '../dbs/models/users';
 
-import responseFormat from '../utils/responseFormat';
+import resFormat from '../utils/res-format';
 import logger from '../../logs/log4';
 
 const Store = new Redis().client;
@@ -32,9 +32,9 @@ const router = new Router({ prefix: '/user' });
 router.post('/login', async(ctx, next) => {
   const username = ctx.request.body.username;
   if (!username) {
-    responseFormat.error(ctx, '请输入用户名');
+    resFormat.error(ctx, '请输入用户名');
   } else if (!ctx.request.body.password) {
-    responseFormat.error(ctx, '请输入密码');
+    resFormat.error(ctx, '请输入密码');
   } else {
     let data = null;
     // 生成token
@@ -57,12 +57,10 @@ router.post('/login', async(ctx, next) => {
       password: ctx.request.body.password
     });
     await Store.hset(token, 'username', username, '_id', data._id);
-    const _id = await Store.hget(token, '_id');
-    logger.debug('登录   _id==', _id, 'headerToken', token);
     if (data) {
-      responseFormat.success(ctx, '登录成功', { user_id: data._id, token, userInfo: data });
+      resFormat.success(ctx, '登录成功', { user_id: data._id, token, userInfo: data });
     } else {
-      responseFormat.error(ctx, '登录失败');
+      resFormat.error(ctx, '登录失败');
     }
   }
 });
@@ -86,13 +84,13 @@ router.post('/login', async(ctx, next) => {
 router.post('/register', async(ctx, next) => {
   const username = ctx.request.body.username;
   if (!username) {
-    responseFormat.error(ctx, '请输入用户名');
+    resFormat.error(ctx, '请输入用户名');
   } else if (!ctx.request.body.password) {
-    responseFormat.error(ctx, '请输入密码');
+    resFormat.error(ctx, '请输入密码');
   } else {
     const findUser = await Users.findOne({ username: username });
     if (findUser) {
-      responseFormat.error(ctx, '用户名已存在');
+      resFormat.error(ctx, '用户名已存在');
       return;
     }
 
@@ -102,7 +100,7 @@ router.post('/register', async(ctx, next) => {
       headPortrait: ctx.request.body.headPortrait
     });
     await user.save();
-    responseFormat.success(ctx, '注册成功');
+    resFormat.success(ctx, '注册成功');
   }
 });
 /**
@@ -119,7 +117,7 @@ router.get('/userInfo', async(ctx, next) => {
   const data = await Users.findOne({
     _id: id
   });
-  responseFormat.success(ctx, '查询成功', data);
+  resFormat.success(ctx, '查询成功', data);
 });
 
 /**
@@ -147,7 +145,7 @@ router.get('/userInfo', async(ctx, next) => {
 router.post('/update', async(ctx, next) => {
   const body = ctx.request.body;
   await Users.where({ _id: body._id }).updateOne(body);
-  responseFormat.success(ctx, '修改成功');
+  resFormat.success(ctx, '修改成功');
 }
 );
 

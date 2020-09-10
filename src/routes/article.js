@@ -6,7 +6,7 @@
 
 import Router from 'koa-router';
 import Article from '../dbs/models/article';
-import responseFormat from '../utils/responseFormat';
+import resFormat from '../utils/res-format';
 
 const router = new Router({ prefix: '/article' });
 
@@ -71,7 +71,7 @@ router.get('/list/:page/:size', async(ctx) => {
     // .sort({ _id: -1 })
     .exec();
   const total = await Article.countDocuments(query);
-  responseFormat.pagingSuccess(ctx, list, total);
+  resFormat.pagingSuccess(ctx, list, total);
 });
 /**
  * @api {post} /article/save 保存
@@ -111,7 +111,7 @@ router.post('/save', async (ctx) => {
     const articleInstance = new Article(body);
     await articleInstance.save();
   }
-  responseFormat.success(ctx, '操作成功');
+  resFormat.success(ctx, '操作成功');
 });
 /**
  * @api {get} /article/detail/:id 详情
@@ -147,9 +147,9 @@ router.post('/save', async (ctx) => {
 router.get('/detail/:id', async (ctx) => {
   try {
     const data = await Article.findOne({ _id: ctx.params.id });
-    responseFormat.success(ctx, '查询成功', data);
+    resFormat.success(ctx, '查询成功', data);
   } catch (e) {
-    responseFormat.error(ctx, '查询失败', e.message);
+    resFormat.error(ctx, '查询失败', e.message);
   }
 });
 /**
@@ -169,6 +169,6 @@ router.get('/detail/:id', async (ctx) => {
 router.post('/delete', async (ctx) => {
   const body = ctx.request.body;
   await Article.deleteOne({ _id: body._id });
-  responseFormat.success(ctx, '操作成功');
+  resFormat.success(ctx, '操作成功');
 });
 module.exports = router;

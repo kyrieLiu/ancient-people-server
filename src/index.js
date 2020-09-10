@@ -20,7 +20,7 @@ const koaBody = require('koa-body');
 
 import logger from '../logs/log4';
 
-import responseFormat from './utils/responseFormat';
+import resFormat from './utils/res-format';
 
 app.use(koaBody({
   multipart: true,
@@ -53,7 +53,7 @@ app.use(async(ctx, next) => {
     const path = `${ctx.request.method} ${ctx.request.url}  Time: ${new Date()}`;
     logger.error(path);
     logger.error(e);
-    responseFormat.error(ctx, e.message);
+    resFormat.error(ctx, e.message);
   }
   const ms = new Date().getTime() - start;
   console.log(`${ctx.request.method} ${ctx.request.url}: ${ms}ms`);
@@ -73,7 +73,7 @@ interfaceArr.forEach(item => {
 
 app.use(async(ctx, next) => {
   // await next();
-  responseFormat.custom(ctx, 404, { code: 404, msg: 'not found ' + ctx.request.path });
+  resFormat.custom(ctx, 404, { code: 404, msg: 'not found ' + ctx.request.path });
 });
 
 const host = process.env.HOST || '0.0.0.0';
