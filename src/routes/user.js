@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import Users from '../dbs/models/users';
 
 import responseFormat from '../utils/responseFormat';
+import logger from '../../logs/log4';
 
 const Store = new Redis().client;
 
@@ -56,6 +57,8 @@ router.post('/login', async(ctx, next) => {
       password: ctx.request.body.password
     });
     await Store.hset(token, 'username', username, '_id', data._id);
+    const _id = await Store.hget(token, '_id');
+    logger.debug('登录   _id==', _id, 'headerToken', token);
     if (data) {
       responseFormat.success(ctx, '登录成功', { user_id: data._id, token, userInfo: data });
     } else {
