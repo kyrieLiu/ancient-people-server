@@ -7,7 +7,6 @@ import jwt from 'jsonwebtoken';
 import Users from '../dbs/models/users';
 
 import resFormat from '../utils/res-format';
-import logger from '../../logs/log4';
 
 const Store = new Redis().client;
 
@@ -36,7 +35,6 @@ router.post('/login', async(ctx, next) => {
   } else if (!ctx.request.body.password) {
     resFormat.error(ctx, '请输入密码');
   } else {
-    let data = null;
     // 生成token
     const token = jwt.sign(
       {
@@ -52,15 +50,18 @@ router.post('/login', async(ctx, next) => {
       await Store.del(exitToken);
     }
     await Store.hset(username, 'token', token);
-    data = await Users.findOne({
-      username: ctx.request.body.username,
-      password: ctx.request.body.password
+    const userData = await Users.findOne({
+      username: ctx.request.body.username
     });
-    await Store.hset(token, 'username', username, '_id', data._id);
-    if (data) {
-      resFormat.success(ctx, '登录成功', { user_id: data._id, token, userInfo: data });
+    if (userData) {
+      if (userData.password === ctx.request.body.password) {
+        await Store.hset(token, 'username', username, '_id', userData._id);
+        resFormat.success(ctx, '登录成功', { user_id: userData._id, token, userInfo: userData });
+      } else {
+        resFormat.error(ctx, '密码错误');
+      }
     } else {
-      resFormat.error(ctx, '登录失败');
+      resFormat.error(ctx, '该账号还未注册,请先注册');
     }
   }
 });
@@ -82,26 +83,7 @@ router.post('/login', async(ctx, next) => {
  * @apiUse SuccessResponse
  */
 router.post('/register', async(ctx, next) => {
-  const username = ctx.request.body.username;
-  if (!username) {
-    resFormat.error(ctx, '请输入用户名');
-  } else if (!ctx.request.body.password) {
-    resFormat.error(ctx, '请输入密码');
-  } else {
-    const findUser = await Users.findOne({ username: username });
-    if (findUser) {
-      resFormat.error(ctx, '用户名已存在');
-      return;
-    }
-
-    const user = new Users({
-      username,
-      password: ctx.request.body.password,
-      headPortrait: ctx.request.body.headPortrait
-    });
-    await user.save();
-    resFormat.success(ctx, '注册成功');
-  }
+  await addUser(ctx);
 });
 /**
  * @api {get} /user/userInfo 获取用户信息
@@ -113,7 +95,8 @@ router.post('/register', async(ctx, next) => {
  * @apiUse SuccessResponse
  */
 router.get('/userInfo', async(ctx, next) => {
-  const id = ctx.userId;
+  const query = ctx.request.query;
+  const id = query.userId || ctx.userId;
   const data = await Users.findOne({
     _id: id
   });
@@ -144,9 +127,109 @@ router.get('/userInfo', async(ctx, next) => {
  */
 router.post('/update', async(ctx, next) => {
   const body = ctx.request.body;
-  await Users.where({ _id: body._id }).updateOne(body);
-  resFormat.success(ctx, '修改成功');
+  if (body._id) {
+    await Users.where({ _id: body._id }).updateOne(body);
+    resFormat.success(ctx, '修改成功');
+  } else {
+    await addUser(ctx);
+  }
+});
+// 添加用户
+async function addUser(ctx) {
+  const body = ctx.request.body;
+  const username = body.username;
+  if (!username) {
+    resFormat.error(ctx, '请输入用户名');
+  } else if (!body.password) {
+    resFormat.error(ctx, '请输入密码');
+  } else {
+    const findUser = await Users.findOne({ username: username });
+    if (findUser) {
+      resFormat.error(ctx, '用户名已存在');
+      return;
+    }
+
+    const user = new Users(body);
+    await user.save();
+    resFormat.success(ctx, '注册成功');
+  }
 }
-);
+
+/**
+ * @api {get} /user/list/:page/:size 列表
+ * @apiGroup 用户中心
+ * @apiUse HeaderExample
+ * @apiDescription 用户列表
+ * @apiSampleRequest /user/list/1/10
+ * @apiParam {String} [keyWords]  关键字查询
+ * @apiParamExample Request-Example:  "
+ * /user/list/1/10?keyWords="一"
+ * @apiSuccess {Number} code 状态码
+ * @apiSuccess {Number} total 总条数
+ * @apiSuccess {Array} list 数据列表
+ * @apiSuccess {String} list.username 用户名称
+ * @apiSuccess {String} list.phone 电话
+ * @apiSuccess {String} list.nickname 昵称
+ * @apiError NoPermission Only Admins can access the data.
+ * @apiUse ErrorResponse
+ * @apiSuccessExample {json} Success-Response:
+ *  {
+    "code": 0,
+    "list": [
+        {
+            "_id": "5f521868cfa77333a4336ac1",
+            "username": "admin",
+            "nickname": "超级管理员"
+        }
+    ],
+    "total": 1
+}
+ */
+router.get('/list/:page/:size', async(ctx) => {
+  try {
+    const query = ctx.request.query;
+    const page = parseInt(ctx.params.page);
+    const size = parseInt(ctx.params.size);
+    const skipNum = (page - 1) * size;
+    const params = {};
+    if (query.keyWords) {
+      const reg = new RegExp(query.keyWords, 'i');
+      params.$or = [ // 多条件，数组
+        { username: { $regex: reg }},
+        { nickname: { $regex: reg }}
+      ];
+    }
+
+    const list = await Users.find(
+      params
+    ).skip(skipNum).limit(size)
+    // .sort({ _id: -1 })
+      .exec();
+    const total = await Users.countDocuments(query);
+    resFormat.pagingSuccess(ctx, list, total);
+  } catch (e) {
+    resFormat.error(ctx, '查询失败', e.message);
+  }
+});
+
+/**
+ * @api {post} /user/delete 删除
+ * @apiGroup 用户中心
+ * @apiDescription 删除
+ * @apiParam {String} _id user id
+ * @apiSampleRequest /user/delete
+ * @apiParamExample Request-Example:
+ * {
+ *   _id:5f521868cfa77333a4336ac1
+ * }
+ * @apiUse HeaderExample
+ * @apiUse ErrorResponse
+ * @apiUse SuccessResponse
+ */
+router.post('/delete', async (ctx) => {
+  const body = ctx.request.body;
+  await Users.deleteOne({ _id: body._id });
+  resFormat.success(ctx, '操作成功');
+});
 
 module.exports = router;
