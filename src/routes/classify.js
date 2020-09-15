@@ -55,10 +55,6 @@ router.get('/list/:page/:size', async(ctx) => {
       ];
     }
 
-    if (query.showStatus) {
-      params.showStatus = 1;
-    }
-
     const list = await Classify.find(
       params
     ).skip(skipNum).limit(size)

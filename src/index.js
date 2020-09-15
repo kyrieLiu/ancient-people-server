@@ -34,8 +34,12 @@ app.use(bodyParser({
 }));
 mongoose.connect(dbConfig.dbs, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  user: 'root',
+  pass: 'ly652992429123',
+  authSource: 'admin'
 });
+
 app.use(cors());
 
 // 配置静态web服务的中间件
