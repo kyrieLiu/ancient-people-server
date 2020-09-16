@@ -58,7 +58,6 @@ router.get('/list/:page/:size', async(ctx) => {
     const list = await Classify.find(
       params
     ).skip(skipNum).limit(size)
-    // .sort({ _id: -1 })
       .exec();
     const total = await Classify.countDocuments(query);
     resFormat.pagingSuccess(ctx, list, total);
