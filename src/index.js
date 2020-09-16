@@ -18,7 +18,7 @@ const koaStatic = require('koa-static');
 
 const koaBody = require('koa-body');
 
-import logger from '../logs/log4';
+import logger from './utils/log4';
 
 import resFormat from './utils/res-format';
 
@@ -68,7 +68,7 @@ const dir = path.join(__dirname, './routes');
 // 配置接口路径
 const interfaceArr = fs.readdirSync(dir);
 interfaceArr.forEach(item => {
-  if (item === 'apidoc.js') {
+  if (item === 'apidoc.js' || item.indexOf('map') > -1) {
     return;
   }
   const routeInstance = require('./routes/' + item);

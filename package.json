@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon src/index.js --watch src --exec babel-node",
-    "build": "nuxt build",
+    "build": "babel ./src -d ./build --source-maps",
     "start": "cross-env NODE_ENV=production babel-node src/index.js",
     "lint": "eslint --ext .js --ignore-path .gitignore .",
     "fixlint": "eslint --fix --ext .js --ignore-path .gitignore .",
