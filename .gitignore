@@ -8,7 +8,7 @@ yarn-debug.log*
 yarn-error.log*
 
 build/
-public/
+public/apidoc/
 
 # Runtime data
 pids

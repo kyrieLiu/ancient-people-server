@@ -174,7 +174,7 @@ async function addUser(ctx) {
  * @apiUse ErrorResponse
  * @apiSuccessExample {json} Success-Response:
  *  {
-    "code": 0,
+    "code": "success",
     "list": [
         {
             "_id": "5f521868cfa77333a4336ac1",
