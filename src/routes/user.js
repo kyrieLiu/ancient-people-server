@@ -104,7 +104,7 @@ router.get('/userInfo', async(ctx, next) => {
 });
 
 /**
- * @api {post} /user/register 更新用户信息
+ * @api {post} /user/update 更新用户信息
  * @apiGroup 用户中心
  * @apiDescription 更新用户信息
  * @apiSampleRequest /user/update

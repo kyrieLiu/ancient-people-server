@@ -19,6 +19,10 @@ const BannerSchema = new Schema({
   showStatus: {
     type: Number
   },
+  // 类型  1滚动  2固定
+  bannerType: {
+    type: Number
+  },
   // 图片地址
   picturePath: {
     type: String

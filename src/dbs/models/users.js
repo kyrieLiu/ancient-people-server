@@ -17,6 +17,9 @@ const UserSchema = new Schema({
   phone: {
     type: String
   },
+  email: {
+    type: String
+  },
   nickname: {
     type: String
   },

@@ -64,6 +64,9 @@ router.get('/list/:page/:size', async(ctx) => {
     if (query.showStatus) {
       params.showStatus = 1;
     }
+    if (query.bannerType) {
+      params.bannerType = query.bannerType;
+    }
 
     const list = await Banner.find(
       params

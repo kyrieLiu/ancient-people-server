@@ -7,6 +7,7 @@
 import Router from 'koa-router';
 import Article from '../dbs/models/article';
 import resFormat from '../utils/res-format';
+import logger from '../utils/log4';
 
 const router = new Router({ prefix: '/article' });
 
@@ -60,18 +61,27 @@ router.get('/list/:page/:size', async(ctx) => {
   if (query.classify) {
     params.classify = query.classify;
   }
-  params.authorId = ctx.userId;
+  // params.authorId = ctx.userId;
+  // 列表不返回详情数据
+  const filter = { _id: 1, title: 1, abstract: 1, classify: 1, author: 1, updateTime: 1, user: 1 };
 
-  const filter = { content: 0 };
-
-  const list = await Article.find(
-    params,
-    filter
-  ).skip(skipNum).limit(size)
-    // .sort({ _id: -1 })
-    .exec();
-  const total = await Article.countDocuments(query);
-  resFormat.pagingSuccess(ctx, list, total);
+  const list = await Article.aggregate([
+    {
+      $match: params
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'authorId',
+        foreignField: '_id',
+        as: 'user'
+      }
+    },
+    {
+      $project: filter
+    }
+  ]).skip(skipNum).limit(size);
+  resFormat.pagingSuccess(ctx, list);
 });
 /**
  * @api {post} /article/save 保存

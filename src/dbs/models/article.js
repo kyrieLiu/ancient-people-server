@@ -15,6 +15,10 @@ const ArticleSchema = new Schema({
   content: {
     type: String
   },
+  // 摘要
+  abstract: {
+    type: String
+  },
   // 文章分类
   classify: {
     type: String
@@ -25,7 +29,7 @@ const ArticleSchema = new Schema({
   },
   // 作者ID
   authorId: {
-    type: String
+    type: Schema.Types.ObjectId
   },
   // 更新时间
   updateTime: {
