@@ -7,7 +7,6 @@
 import Router from 'koa-router';
 import Article from '../dbs/models/article';
 import resFormat from '../utils/res-format';
-import logger from '../utils/log4';
 
 const router = new Router({ prefix: '/article' });
 
@@ -63,25 +62,30 @@ router.get('/list/:page/:size', async(ctx) => {
   }
   // params.authorId = ctx.userId;
   // 列表不返回详情数据
-  const filter = { _id: 1, title: 1, abstract: 1, classify: 1, author: 1, updateTime: 1, user: 1 };
-
-  const list = await Article.aggregate([
-    {
-      $match: params
-    },
-    {
-      $lookup: {
-        from: 'users',
-        localField: 'authorId',
-        foreignField: '_id',
-        as: 'user'
-      }
-    },
-    {
-      $project: filter
-    }
-  ]).skip(skipNum).limit(size);
-  resFormat.pagingSuccess(ctx, list);
+  // const filter = { _id: 1, title: 1, abstract: 1, classify: 1, author: 1, updateTime: 1, user: { _id: 1, nickname: 1, headPortrait: 1 }};
+  // const list = await Article.aggregate([
+  //   {
+  //     $match: params
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'users',
+  //       localField: 'author',
+  //       foreignField: '_id',
+  //       as: 'user'
+  //     }
+  //   },
+  //   {
+  //     $project: filter
+  //   }
+  // ]).skip(skipNum).limit(size);
+  // const count = await Article.find(
+  //   params
+  // ).count(true);
+  const count = await Article.countDocuments(params);
+  const list = await Article.find(params).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }})
+    .skip(skipNum).limit(size);
+  resFormat.pagingSuccess(ctx, list, count);
 });
 /**
  * @api {post} /article/save 保存
@@ -113,11 +117,10 @@ router.get('/list/:page/:size', async(ctx) => {
 router.post('/save', async (ctx) => {
   const body = ctx.request.body;
   body.updateTime = new Date();
+  body.author = ctx.userId;
   if (body._id) {
     await Article.where({ _id: body._id }).updateOne(body);
   } else {
-    body.authorId = ctx.userId;
-    body.author = ctx.username;
     const articleInstance = new Article(body);
     await articleInstance.save();
   }
@@ -156,7 +159,7 @@ router.post('/save', async (ctx) => {
  */
 router.get('/detail/:id', async (ctx) => {
   try {
-    const data = await Article.findOne({ _id: ctx.params.id });
+    const data = await Article.findOne({ _id: ctx.params.id }).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }});
     resFormat.success(ctx, '查询成功', data);
   } catch (e) {
     resFormat.error(ctx, '查询失败', e.message);

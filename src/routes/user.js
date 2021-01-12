@@ -148,7 +148,7 @@ async function addUser(ctx) {
       resFormat.error(ctx, '用户名已存在');
       return;
     }
-
+    body.nickname = body.username;
     const user = new Users(body);
     await user.save();
     resFormat.success(ctx, '注册成功');

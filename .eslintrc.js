@@ -14,6 +14,7 @@ module.exports = {
     'semi': ['error', 'always'],
     // "quotes": "off",
     'no-console': 'off',
+    // 'handle-callback-err': 'off',
     // "no-unused-vars":"off",
     // "no-unreachable":"off",
     // "no-redeclare":"warn",

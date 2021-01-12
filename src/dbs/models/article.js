@@ -23,13 +23,10 @@ const ArticleSchema = new Schema({
   classify: {
     type: String
   },
-  // 作者
-  author: {
-    type: String
-  },
   // 作者ID
-  authorId: {
-    type: Schema.Types.ObjectId
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
   // 更新时间
   updateTime: {
