@@ -33,7 +33,7 @@ router.post('/upload', async (ctx, next) => {
   const upStream = fs.createWriteStream(filePath);
   // 可读流通过管道写入可写流
   reader.pipe(upStream);
-  const fileFolder = process.env.NODE_ENV === 'development' ? 'http://localhost/file/' : 'http://www.8000cloud.com/file/';
+  const fileFolder = process.env.NODE_ENV === 'development' ? 'http://localhost/file/' : 'http://http://121.36.173.121/file/';
 
   resFormat.success(ctx, '上传成功', { filePath: fileFolder + fileName });
 });
