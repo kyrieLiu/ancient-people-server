@@ -117,6 +117,10 @@ router.get('/list/:page/:size', async(ctx) => {
 router.post('/save', async (ctx) => {
   const body = ctx.request.body;
   body.updateTime = new Date();
+  if (!ctx.userId) {
+    resFormat.auth(ctx);
+    return;
+  }
   body.author = ctx.userId;
   if (body._id) {
     await Article.where({ _id: body._id }).updateOne(body);

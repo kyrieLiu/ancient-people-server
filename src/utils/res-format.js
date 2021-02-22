@@ -32,6 +32,15 @@ const resFormat = new class {
       error
     };
   }
+  // 认证失败
+  auth(ctx, msg = '请登录', error) {
+    ctx.status = 401;
+    ctx.body = {
+      code: 'auth',
+      msg,
+      error
+    };
+  }
   // 自定义返回
   custom(ctx, status, body) {
     ctx.status = status;
