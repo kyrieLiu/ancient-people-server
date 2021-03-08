@@ -7,6 +7,7 @@
 import Router from 'koa-router';
 import Article from '../dbs/models/article';
 import resFormat from '../utils/res-format';
+import logger from '../utils/log4';
 
 const router = new Router({ prefix: '/article' });
 
@@ -171,7 +172,7 @@ router.get('/detail/:id', async (ctx) => {
     req.connection.remoteAddress || // 判断 connection 的远程 IP
     req.socket.remoteAddress || // 判断后端的 socket 的 IP
     req.connection.socket.remoteAddress;
-  console.log(ip);
+  logger.error(ip);
   const data = await Article.findOne({ _id: ctx.params.id }).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }}).lean();
   data.ip = ip;
   resFormat.success(ctx, '查询成功', data);
