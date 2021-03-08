@@ -60,33 +60,37 @@ router.get('/list/:page/:size', async(ctx) => {
   if (query.classify) {
     params.classify = query.classify;
   }
-  // params.authorId = ctx.userId;
-  // 列表不返回详情数据
-  // const filter = { _id: 1, title: 1, abstract: 1, classify: 1, author: 1, updateTime: 1, user: { _id: 1, nickname: 1, headPortrait: 1 }};
-  // const list = await Article.aggregate([
-  //   {
-  //     $match: params
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: 'users',
-  //       localField: 'author',
-  //       foreignField: '_id',
-  //       as: 'user'
-  //     }
-  //   },
-  //   {
-  //     $project: filter
-  //   }
-  // ]).skip(skipNum).limit(size);
-  // const count = await Article.find(
-  //   params
-  // ).count(true);
+  const filter = { content: 0 };
   const count = await Article.countDocuments(params);
-  const list = await Article.find(params).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }})
+  const list = await Article.find(params, filter).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }}).lean()
     .skip(skipNum).limit(size);
+  const userId = ctx.userId;
+  if (userId) {
+    list.forEach(item => {
+      // 点赞数据
+      const likeList = item.likeList;
+      const likeObj = getUserAction(userId, item, likeList);
+      item.likeNumber = likeObj.doneNumber;
+      item.isLike = likeObj.isDone;
+      // 收藏数据
+      const collectList = item.collectList;
+      const collectObj = getUserAction(userId, item, collectList);
+      item.collectNumber = collectObj.doneNumber;
+      item.isCollect = collectObj.isDone;
+    });
+  }
   resFormat.pagingSuccess(ctx, list, count);
 });
+function getUserAction(userId, item, list) {
+  const isDone = list.some(collectItem => {
+    const _id = collectItem._id.toString();
+    if (_id === userId) {
+      return true;
+    }
+  });
+  const doneNumber = list.length;
+  return { isDone, doneNumber };
+}
 /**
  * @api {post} /article/save 保存
  * @apiGroup 文章管理
@@ -162,12 +166,15 @@ router.post('/save', async (ctx) => {
 }
  */
 router.get('/detail/:id', async (ctx) => {
-  try {
-    const data = await Article.findOne({ _id: ctx.params.id }).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }});
-    resFormat.success(ctx, '查询成功', data);
-  } catch (e) {
-    resFormat.error(ctx, '查询失败', e.message);
-  }
+  const req = ctx.req;
+  const ip = req.headers['x-forwarded-for'] || // 判断是否有反向代理 IP
+    req.connection.remoteAddress || // 判断 connection 的远程 IP
+    req.socket.remoteAddress || // 判断后端的 socket 的 IP
+    req.connection.socket.remoteAddress;
+  console.log(ip);
+  const data = await Article.findOne({ _id: ctx.params.id }).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }}).lean();
+  data.ip = ip;
+  resFormat.success(ctx, '查询成功', data);
 });
 /**
  * @api {post} /article/delete 删除
@@ -186,6 +193,86 @@ router.get('/detail/:id', async (ctx) => {
 router.post('/delete', async (ctx) => {
   const body = ctx.request.body;
   await Article.deleteOne({ _id: body._id });
+  resFormat.success(ctx, '操作成功');
+});
+/**
+ * @api {post} /article/like 点赞
+ * @apiGroup 文章管理
+ * @apiDescription 点赞
+ * @apiParam {String} _id article id
+ * @apiParam {String} type 点赞类型: 1点赞  0取消点赞
+ * @apiSampleRequest /article/like
+ * @apiParamExample Request-Example:
+ * {
+ *   _id:5f521868cfa77333a4336ac1
+ * }
+ * @apiUse HeaderExample
+ * @apiUse ErrorResponse
+ * @apiUse SuccessResponse
+ */
+router.post('/like', async (ctx) => {
+  const body = ctx.request.body;
+  if (!ctx.userId) {
+    resFormat.auth(ctx);
+    return;
+  }
+  const userId = ctx.userId;
+  const article = await Article.findOne({ _id: body._id });
+  const likeList = article.likeList || [];
+  if (body.type === 1) {
+    likeList.push({ _id: userId });
+  } else {
+    likeList.some((item, index) => {
+      const _id = item._id.toString();
+      if (_id === userId) {
+        likeList.splice(index, 1);
+        return true;
+      }
+    });
+  }
+  if (body._id) {
+    await Article.where({ _id: body._id }).updateOne(article);
+  }
+  resFormat.success(ctx, '操作成功');
+});
+/**
+ * @api {post} /article/collect 收藏
+ * @apiGroup 文章管理
+ * @apiDescription 收藏
+ * @apiParam {String} _id article id
+ * @apiParam {String} type 收藏类型: 1收藏  0取消收藏
+ * @apiSampleRequest /article/collect
+ * @apiParamExample Request-Example:
+ * {
+ *   _id:5f521868cfa77333a4336ac1
+ * }
+ * @apiUse HeaderExample
+ * @apiUse ErrorResponse
+ * @apiUse SuccessResponse
+ */
+router.post('/collect', async (ctx) => {
+  const body = ctx.request.body;
+  if (!ctx.userId) {
+    resFormat.auth(ctx);
+    return;
+  }
+  const userId = ctx.userId;
+  const article = await Article.findOne({ _id: body._id });
+  const collectList = article.collectList || [];
+  if (body.type === 1) {
+    collectList.push({ _id: userId });
+  } else {
+    collectList.some((item, index) => {
+      const _id = item._id.toString();
+      if (_id === userId) {
+        collectList.splice(index, 1);
+        return true;
+      }
+    });
+  }
+  if (body._id) {
+    await Article.where({ _id: body._id }).updateOne(article);
+  }
   resFormat.success(ctx, '操作成功');
 });
 module.exports = router;

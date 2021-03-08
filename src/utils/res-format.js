@@ -34,7 +34,7 @@ const resFormat = new class {
   }
   // 认证失败
   auth(ctx, msg = '请登录', error) {
-    ctx.status = 401;
+    ctx.status = 200;
     ctx.body = {
       code: 'auth',
       msg,

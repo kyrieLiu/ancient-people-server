@@ -31,6 +31,30 @@ const ArticleSchema = new Schema({
   // 更新时间
   updateTime: {
     type: Date
-  }
+  },
+  // 点赞
+  likeList: [
+    {
+      _id: {
+        type: Schema.Types.ObjectId
+      }
+    }
+  ],
+  // 收藏
+  collectList: [
+    {
+      _id: {
+        type: Schema.Types.ObjectId
+      }
+    }
+  ],
+  // 已阅读
+  readList: [
+    {
+      _id: {
+        type: Schema.Types.ObjectId
+      }
+    }
+  ]
 }, { versionKey: false });
 export default mongoose.model('Article', ArticleSchema);
