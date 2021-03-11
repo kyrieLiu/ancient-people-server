@@ -7,7 +7,6 @@
 import Router from 'koa-router';
 import Article from '../dbs/models/article';
 import resFormat from '../utils/res-format';
-import logger from '../utils/log4';
 
 const router = new Router({ prefix: '/article' });
 
@@ -74,8 +73,8 @@ router.get('/list/:page/:size', async(ctx) => {
       item.likeNumber = likeObj.doneNumber;
       item.isLike = likeObj.isDone;
       // 收藏数据
-      const collectList = item.collectList;
-      const collectObj = getUserAction(userId, item, collectList);
+      const collect_list = item.collect_list;
+      const collectObj = getUserAction(userId, item, collect_list);
       item.collectNumber = collectObj.doneNumber;
       item.isCollect = collectObj.isDone;
     });
@@ -92,6 +91,79 @@ function getUserAction(userId, item, list) {
   const doneNumber = list.length;
   return { isDone, doneNumber };
 }
+/**
+ * @api {get} /article/collect/:page/:size 列表
+ * @apiGroup 文章管理
+ * @apiName 我的收藏
+ * @apiPermission admin
+ * @apiUse HeaderExample
+ * @apiDescription article收藏列表
+ * @apiSampleRequest /article/collect/1/10
+ * @apiParam {String} [keyWords]  关键字查询
+ * @apiParamExample Request-Example:  "
+ * /article/collect/1/10?keyWords="一"
+ * @apiSuccess {Number} code 状态码
+ * @apiSuccess {Number} total 总条数
+ * @apiSuccess {Array} list 数据列表
+ * @apiSuccess {String} list.name article名称
+ * @apiSuccess {String} list.explain article说明
+ * @apiError NoPermission Only Admins can access the data.
+ * @apiUse ErrorResponse
+ * @apiSuccessExample {json} Success-Response:
+ *  {
+    "code":"success",
+    "list":[
+        {
+            "_id":"5f588ef5389b12290bb08c4c",
+            "title":"flutter入门",
+            "author":"刘",
+            "classify":"flutter",
+            "updateTime":"2020-09-09T08:21:20.965Z"
+        }
+    ],
+    "total":1
+}
+ */
+router.get('/collect/:page/:size', async(ctx) => {
+  const query = ctx.request.query;
+  const page = parseInt(ctx.params.page);
+  const size = parseInt(ctx.params.size);
+  const skipNum = (page - 1) * size;
+  const params = {};
+  if (query.keyWords) {
+    const reg = new RegExp(query.keyWords, 'i');
+    params.$or = [ // 多条件，数组
+      { title: { $regex: reg }},
+      { content: { $regex: reg }}
+    ];
+  }
+
+  if (query.classify) {
+    params.classify = query.classify;
+  }
+  const filter = { content: 0 };
+  const userId = ctx.userId;
+  params.collect_list = userId;
+  const count = await Article.countDocuments(params);
+  const list = await Article.find(params, filter).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }}).lean()
+    .skip(skipNum).limit(size);
+
+  if (userId) {
+    list.forEach(item => {
+      // 点赞数据
+      const likeList = item.likeList;
+      const likeObj = getUserAction(userId, item, likeList);
+      item.likeNumber = likeObj.doneNumber;
+      item.isLike = likeObj.isDone;
+      // 收藏数据
+      const collect_list = item.collect_list;
+      const collectObj = getUserAction(userId, item, collect_list);
+      item.collectNumber = collectObj.doneNumber;
+      item.isCollect = collectObj.isDone;
+    });
+  }
+  resFormat.pagingSuccess(ctx, list, count);
+});
 /**
  * @api {post} /article/save 保存
  * @apiGroup 文章管理
@@ -167,14 +239,13 @@ router.post('/save', async (ctx) => {
 }
  */
 router.get('/detail/:id', async (ctx) => {
-  const req = ctx.req;
-  const ip = req.headers['x-forwarded-for'] || // 判断是否有反向代理 IP
-    req.connection.remoteAddress || // 判断 connection 的远程 IP
-    req.socket.remoteAddress || // 判断后端的 socket 的 IP
-    req.connection.socket.remoteAddress;
-  logger.error(ip);
+  // const req = ctx.req;
+  // const ip = req.headers['x-forwarded-for'] || // 判断是否有反向代理 IP
+  //   req.connection.remoteAddress || // 判断 connection 的远程 IP
+  //   req.socket.remoteAddress || // 判断后端的 socket 的 IP
+  //   req.connection.socket.remoteAddress;
+  // logger.error(req.ip);
   const data = await Article.findOne({ _id: ctx.params.id }).populate({ path: 'author', select: { _id: 1, nickname: 1, headPortrait: 1 }}).lean();
-  data.ip = ip;
   resFormat.success(ctx, '查询成功', data);
 });
 /**
@@ -258,21 +329,10 @@ router.post('/collect', async (ctx) => {
     return;
   }
   const userId = ctx.userId;
-  const article = await Article.findOne({ _id: body._id });
-  const collectList = article.collectList || [];
   if (body.type === 1) {
-    collectList.push({ _id: userId });
+    await Article.update({ _id: body._id }, { $addToSet: { collect_list: userId }});
   } else {
-    collectList.some((item, index) => {
-      const _id = item._id.toString();
-      if (_id === userId) {
-        collectList.splice(index, 1);
-        return true;
-      }
-    });
-  }
-  if (body._id) {
-    await Article.where({ _id: body._id }).updateOne(article);
+    await Article.update({ _id: body._id }, { $pull: { collect_list: userId }});
   }
   resFormat.success(ctx, '操作成功');
 });

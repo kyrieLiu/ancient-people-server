@@ -42,11 +42,11 @@ const ArticleSchema = new Schema({
   ],
   // 收藏
   collectList: [
-    {
-      _id: {
-        type: Schema.Types.ObjectId
-      }
-    }
+    Schema.Types.ObjectId
+  ],
+  // 收藏
+  collect_list: [
+    Schema.Types.ObjectId
   ],
   // 已阅读
   readList: [
